@@ -5,31 +5,163 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="https://unpkg.com/terminal.css@0.7.2/dist/terminal.min.css" />
 </head>
-<body>
-    <h1>Hello World</h1>
-    <div id="new"></div>
+<body class="terminal">
+    <div class="container">
+        <div class="terminal-nav">
+            <div class="terminal-logo">
+              <div class="logo terminal-prompt"><a href="#" class="no-style">Taskeroo</a></div>
+            </div>
+            <nav class="terminal-menu">
+              <ul>
+                <li><a class="menu-item" href="#">#Yesterday</a></li>
+                <li><a class="menu-item active" href="#">#Today</a></li>
+                <li><a class="menu-item" href="#">#Tomorrow</a></li>
+                <button id="new-task-button" class="btn btn-primary" onclick="toggleNewTaskVisibility()">New Task</button>
+              </ul>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container" id="tasks">
+        <form id="new-task-form">
+            <fieldset>
+                <legend>Create new Task</legend>
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input id="name" type="text" placeholder="Name of your task">
+                </div>
+                <div class="form-group">
+                    <label for="desc">Description:</label>
+                    <textarea id="desc" cols="30" rows="5" placeholder="Description of your task"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="check">Personal:</label>
+                    <input for="check" type="checkbox" id="check">
+                </div>
+                <button class="btn btn-primary">Create</button>
+            </fieldset>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+        </form>
+        <div id="loading-text">
+            <br>
+            <br>
+            <br>
+            <br>
+            <span><center>Loading tasks..</center></span>
+            <br>
+            <br>
+            <br>
+            <br>
+        </div>
+        <br>
+    </div>
+    
 </body>
 </html>
 
+
 <script>
+var newTaskVisibility = true;
+
+hideNewTask()
+
+
+function toggleNewTaskVisibility() {
+    switch(newTaskVisibility) {
+        case true:
+            hideNewTask();
+            break;
+        case false:
+            viewNewTask();
+            break;
+    }
+}
+
+function viewNewTask() {
+    var newTaskButton = document.getElementById("new-task-button");
+    var newTaskForm = document.getElementById("new-task-form");
+
+    newTaskButton.classList.remove("btn-primary")
+    newTaskButton.classList.add("btn-error")
+    newTaskButton.classList.add("btn-ghost")
+    newTaskButton.innerHTML = "Cancel"
+
+    newTaskForm.style.display = "block"
+    newTaskVisibility = true
+}
+
+function hideNewTask() {
+    var newTaskButton = document.getElementById("new-task-button");
+    var newTaskForm = document.getElementById("new-task-form");
+
+    newTaskButton.classList.add("btn-primary")
+    newTaskButton.classList.remove("btn-error")
+    newTaskButton.classList.remove("btn-ghost")
+    newTaskButton.innerHTML = "New Task"
+
+    newTaskForm.style.display = "none"
+    newTaskVisibility = false;
+}
+
+
 async function fetchDataAsync(url) {
     const response = await fetch(url)
     .then((response) => response.json())
     .then((data) => {
+        document.getElementById("loading-text").remove();
         for (var task of data.tasks) {
             console.log(task.name);
 
-            var tag = document.createElement("p");
-            var text = document.createTextNode(task.name)
-            tag.appendChild(text)
-            var element = document.getElementById("new");
-            element.appendChild(tag);
+            var terminalCardDiv = document.createElement("div");
+            terminalCardDiv.classList.add("terminal-card")
+
+            var header = document.createElement("header");
+            header.appendChild(document.createTextNode(task.name))
+
+            var innerDiv = document.createElement("div");
+            innerDiv.appendChild(document.createTextNode(task.description))
+
+            terminalCardDiv.appendChild(header);
+            terminalCardDiv.appendChild(innerDiv);
+
+            var element = document.getElementById("tasks");
+            element.appendChild(terminalCardDiv);
+            element.appendChild(document.createElement("br"));
 
         }
     })
 }
 
 fetchDataAsync('http://localhost:7370/api/?token=whenyouseeit');
-
 </script>
+
+
+
+
+<style>
+    :root {
+	--global-font-size: 15px;
+	--global-line-height: 1.4em;
+	--global-space: 10px;
+	--font-stack: Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,serif;
+	--mono-font-stack: Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,serif;
+	--background-color: #0d0d0d;
+	--page-width: 60em;
+	--font-color: #ececec;
+	--invert-font-color: #000;
+	--primary-color: #e01a9c;
+	--secondary-color: #a3a6a8;
+	--error-color: #d20909;
+	--progress-bar-background: #70b8e7;
+	--progress-bar-fill: #151515;
+	--code-bg-color: #262626;
+	--input-style: solid;
+	--display-h1-decoration: none;
+}
+</style>
