@@ -8,5 +8,28 @@
 </head>
 <body>
     <h1>Hello World</h1>
+    <div id="new"></div>
 </body>
 </html>
+
+<script>
+async function fetchDataAsync(url) {
+    const response = await fetch(url)
+    .then((response) => response.json())
+    .then((data) => {
+        for (var task of data.tasks) {
+            console.log(task.name);
+
+            var tag = document.createElement("p");
+            var text = document.createTextNode(task.name)
+            tag.appendChild(text)
+            var element = document.getElementById("new");
+            element.appendChild(tag);
+
+        }
+    })
+}
+
+fetchDataAsync('http://localhost:7370/api/?token=whenyouseeit');
+
+</script>
