@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taskeroo Built In Website</title>
+    <title>Taskeroo Built-In Website</title>
     <link rel="stylesheet" href="https://unpkg.com/terminal.css@0.7.2/dist/terminal.min.css" />
 </head>
 <body class="terminal">
@@ -69,6 +69,8 @@
 <script>
 var newTaskVisibility = true;
 var taskList = [];
+var selectedDate = getCurrentDate();
+
 hideNewTask()
 
 async function fetchDataAsync(url) {
@@ -96,8 +98,19 @@ async function fetchDataAsync(url) {
             var innerDiv = document.createElement("div");
             innerDiv.appendChild(document.createTextNode(task.description))
 
+            var button = document.createElement("button");
+            button.onclick = function() {finishTask(this)};
+            button.appendChild(document.createTextNode("Task Done"));
+
             terminalCardDiv.appendChild(header);
             terminalCardDiv.appendChild(innerDiv);
+            terminalCardDiv.appendChild(button);
+            terminalCardDiv.setAttribute("taskId", task.id);
+            terminalCardDiv.setAttribute("taskName", task.name);
+            terminalCardDiv.setAttribute("taskDesc", task.description);
+            terminalCardDiv.setAttribute("taskCompleted", task.completed);
+            terminalCardDiv.setAttribute("taskPersonal", task.personal);
+            terminalCardDiv.setAttribute("taskDate", task.date);
 
             var br = document.createElement("br") 
             var element = document.getElementById("tasks");
@@ -108,7 +121,15 @@ async function fetchDataAsync(url) {
         }
     });
 }
-var selectedDate = getCurrentDate();
+
+
+async function finishTask(buttonElement) {
+    var taskId = buttonElement.parentNode.getAttribute("taskId");
+    var element = buttonElement.parentNode;
+    await fetch("http://localhost:7370/api/remove?id=" +taskId +"&token=whenyouseeit");
+    element.remove();
+}
+
 
 function switchDate(newDate) {
     var yesterdayButton = document.getElementById("yesterday-button");
@@ -185,7 +206,6 @@ function toggleNewTaskVisibility() {
             break;
     }
 }
-
 
 function hideLoadingText() {
     var loadingTextDiv = document.getElementById("loading-text");
