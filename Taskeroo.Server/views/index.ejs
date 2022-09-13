@@ -40,7 +40,7 @@
                     <label for="check">Personal:</label>
                     <input for="check" type="checkbox" id="check">
                 </div>
-                <button class="btn btn-primary">Create</button>
+                <button class="btn btn-primary" onclick="createTask()">Create</button>
             </fieldset>
             <br>
             <br>
@@ -128,6 +128,26 @@ async function finishTask(buttonElement) {
     var element = buttonElement.parentNode;
     await fetch("http://localhost:7370/api/remove?id=" +taskId +"&token=whenyouseeit");
     element.remove();
+}
+
+async function createTask() {
+    var taskName = document.getElementById("name").value;
+    var taskDesc = document.getElementById("desc").value;
+    var taskPersonal = document.getElementById("check").checked;
+    var date = selectedDate;
+
+    if(taskName == "" || taskName == null) {
+        alert("Task name cannot be empty!")
+        return;
+    }
+
+    await fetch(`http://localhost:7370/api/create?name=${taskName}&desc=${taskDesc}&personal=${taskPersonal}&date=${date}&token=whenyouseeit`);
+    fetchDataAsync('http://localhost:7370/api/?token=whenyouseeit')
+
+    document.getElementById("name").value = ""
+    document.getElementById("desc").value = ""
+    taskPersonal = document.getElementById("check").checked = false
+    hideNewTask();
 }
 
 
