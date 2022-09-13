@@ -82,6 +82,9 @@ async function fetchDataAsync(url) {
     .then((data) => {
         hideLoadingText();
         for (var task of data.tasks) {
+            if(task.date != selectedDate) {
+                continue;
+            }
             console.log(task.name);
 
             var terminalCardDiv = document.createElement("div");
@@ -102,7 +105,6 @@ async function fetchDataAsync(url) {
             element.appendChild(br);
             taskList.push(terminalCardDiv);
             taskList.push(br);
-            
         }
     });
 }
