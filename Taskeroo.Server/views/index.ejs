@@ -98,19 +98,31 @@ async function fetchDataAsync(url) {
             var innerDiv = document.createElement("div");
             innerDiv.appendChild(document.createTextNode(task.description))
 
+
             var button = document.createElement("button");
             button.onclick = function() {finishTask(this)};
             button.appendChild(document.createTextNode("Task Done"));
+            button.classList.add("btn"); 
+            button.classList.add("btn-ghost"); 
+            button.classList.add("btn-primary");
+            button.classList.add("btn-left") 
 
+            var cardContentDiv = document.createElement("div");
             terminalCardDiv.appendChild(header);
-            terminalCardDiv.appendChild(innerDiv);
-            terminalCardDiv.appendChild(button);
+            cardContentDiv.appendChild(innerDiv);
+            cardContentDiv.appendChild(button);
+            cardContentDiv.classList.add("task-card-inner")
+
+            terminalCardDiv.appendChild(cardContentDiv);
             terminalCardDiv.setAttribute("taskId", task.id);
             terminalCardDiv.setAttribute("taskName", task.name);
             terminalCardDiv.setAttribute("taskDesc", task.description);
             terminalCardDiv.setAttribute("taskCompleted", task.completed);
             terminalCardDiv.setAttribute("taskPersonal", task.personal);
             terminalCardDiv.setAttribute("taskDate", task.date);
+            terminalCardDiv.classList.add("task-card");
+
+//task-card-inner
 
             var br = document.createElement("br") 
             var element = document.getElementById("tasks");
@@ -124,8 +136,8 @@ async function fetchDataAsync(url) {
 
 
 async function finishTask(buttonElement) {
-    var taskId = buttonElement.parentNode.getAttribute("taskId");
-    var element = buttonElement.parentNode;
+    var taskId = buttonElement.parentNode.parentNode.getAttribute("taskId");
+    var element = buttonElement.parentNode.parentNode;
     await fetch("http://localhost:7370/api/remove?id=" +taskId +"&token=whenyouseeit");
     element.remove();
 }
@@ -270,6 +282,16 @@ fetchDataAsync('http://localhost:7370/api/?token=whenyouseeit');
 </script>
 
 <style>
+
+.btn-left {
+    float: right;
+}
+
+.task-card-inner {
+    display: flex;
+    justify-content: space-between;
+}
+
     :root {
 	--global-font-size: 15px;
 	--global-line-height: 1.4em;
