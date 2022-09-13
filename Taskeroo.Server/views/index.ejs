@@ -68,14 +68,19 @@
 
 <script>
 var newTaskVisibility = true;
+var taskList = [];
 hideNewTask()
 
-
 async function fetchDataAsync(url) {
+    var taskContainer = document.getElementById("tasks");
+    for(var task of taskList) {
+        task.remove();
+    } 
+    showLoadingText();
     const response = await fetch(url)
     .then((response) => response.json())
     .then((data) => {
-        document.getElementById("loading-text").remove();
+        hideLoadingText();
         for (var task of data.tasks) {
             console.log(task.name);
 
@@ -91,10 +96,13 @@ async function fetchDataAsync(url) {
             terminalCardDiv.appendChild(header);
             terminalCardDiv.appendChild(innerDiv);
 
+            var br = document.createElement("br") 
             var element = document.getElementById("tasks");
             element.appendChild(terminalCardDiv);
-            element.appendChild(document.createElement("br"));
-
+            element.appendChild(br);
+            taskList.push(terminalCardDiv);
+            taskList.push(br);
+            
         }
     });
 }
@@ -175,6 +183,19 @@ function toggleNewTaskVisibility() {
             break;
     }
 }
+
+
+function hideLoadingText() {
+    var loadingTextDiv = document.getElementById("loading-text");
+    loadingTextDiv.style.display = "none" 
+}
+
+function showLoadingText() {
+    var loadingTextDiv = document.getElementById("loading-text");
+    loadingTextDiv.style.display = "block" 
+}
+
+
 
 function viewNewTask() {
     var newTaskButton = document.getElementById("new-task-button");
