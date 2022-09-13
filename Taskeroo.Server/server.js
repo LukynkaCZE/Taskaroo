@@ -22,6 +22,7 @@ server.get('/', async (req, res) => {
 });
 
 server.get("/api", async (req, res) => {
+    console.log("[🔽 API] /api request from " +req.hostname)
     var token = req.query.token;
 
     if(token != process.env.TOKEN) {
@@ -33,6 +34,7 @@ server.get("/api", async (req, res) => {
     res.json({
         tasks: tasks
     });
+    console.log("[🔼 API] Responded with tasks to client " +req.hostname)
 });
 
 server.get("/api/create", async (req, res) => {
