@@ -42,19 +42,14 @@ server.get("/api/create", async (req, res) => {
     var desc = req.query.desc;
     var personal = req.query.personal;
     var token = req.query.token;
+    var date = req.query.date;
 
-    let dateNow = new Date(Date.now());
-    let yyyy = dateNow.getFullYear();
-    let mm = dateNow.getMonth()+1;
-    let dd=  dateNow.getDate(); 
-    var date = yyyy +"-" +mm +"-" +dd;
-    
     if(token != process.env.TOKEN) {
         res.json({error: "Invalid Token"})
         return;
     }
 
-    if(!(name && date && personal)) {
+    if(!(name && date && personal && date)) {
         res.json({error: "Missing Parameters"});
         return;
     }
