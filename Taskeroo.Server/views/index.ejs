@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <script>
 
 //CONFIG
@@ -10,7 +11,6 @@ const APIToken = "yourapitoken";
 
 
 
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -54,7 +54,7 @@ const APIToken = "yourapitoken";
                     <input for="check" type="checkbox" id="check">
                 </div>
                 -->
-                <button class="btn btn-primary" onclick="createTask()">Create</button>
+                <a class="btn btn-primary" onclick="createTask()">Create</a>
             </fieldset>
             <br>
             <br>
@@ -300,7 +300,7 @@ function APICall(url) {
         return APIEndpoint + "?token=" +APIToken
     }
     else {
-        console.log(APIEndpoint + "?token=" +APIToken)
+        console.log("Call for: " +APIEndpoint + url +"&token=" +APIToken)
         return APIEndpoint + url +"&token=" +APIToken
     }
 }
