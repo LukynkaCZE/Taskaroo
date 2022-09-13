@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Taskeroo Built In Website</title>
     <link rel="stylesheet" href="https://unpkg.com/terminal.css@0.7.2/dist/terminal.min.css" />
 </head>
 <body class="terminal">
@@ -15,9 +15,9 @@
             </div>
             <nav class="terminal-menu">
               <ul>
-                <li><a class="menu-item" href="#">#Yesterday</a></li>
-                <li><a class="menu-item active" href="#">#Today</a></li>
-                <li><a class="menu-item" href="#">#Tomorrow</a></li>
+                <li><a class="menu-item" onclick="switchDate('yesterday')" id="yesterday-button">#Yesterday</a></li>
+                <li><a class="menu-item active" onclick="switchDate('today')" id="today-button">#Today</a></li>
+                <li><a class="menu-item" onclick="switchDate('tomorrow')" id="tomorrow-button">#Tomorrow</a></li>
                 <button id="new-task-button" class="btn btn-primary" onclick="toggleNewTaskVisibility()">New Task</button>
               </ul>
             </nav>
@@ -68,9 +68,102 @@
 
 <script>
 var newTaskVisibility = true;
-
 hideNewTask()
 
+
+async function fetchDataAsync(url) {
+    const response = await fetch(url)
+    .then((response) => response.json())
+    .then((data) => {
+        document.getElementById("loading-text").remove();
+        for (var task of data.tasks) {
+            console.log(task.name);
+
+            var terminalCardDiv = document.createElement("div");
+            terminalCardDiv.classList.add("terminal-card")
+
+            var header = document.createElement("header");
+            header.appendChild(document.createTextNode(task.name))
+
+            var innerDiv = document.createElement("div");
+            innerDiv.appendChild(document.createTextNode(task.description))
+
+            terminalCardDiv.appendChild(header);
+            terminalCardDiv.appendChild(innerDiv);
+
+            var element = document.getElementById("tasks");
+            element.appendChild(terminalCardDiv);
+            element.appendChild(document.createElement("br"));
+
+        }
+    });
+}
+var selectedDate = getCurrentDate();
+
+function switchDate(newDate) {
+    var yesterdayButton = document.getElementById("yesterday-button");
+    var todayButton = document.getElementById("today-button");
+    var tomorrowButton = document.getElementById("tomorrow-button");
+
+    switch(newDate) {
+        case "today":
+            selectedDate = getCurrentDate();
+            yesterdayButton.classList.remove("active");
+            todayButton.classList.add("active");
+            tomorrowButton.classList.remove("active");
+            break;
+        case "tomorrow":
+            selectedDate = getTomorrowDate();
+            yesterdayButton.classList.remove("active");
+            todayButton.classList.remove("active");
+            tomorrowButton.classList.add("active");  
+            break;          
+        case "yesterday":
+            selectedDate = getYesterdayDate();
+            yesterdayButton.classList.add("active");            
+            todayButton.classList.remove("active");            
+            tomorrowButton.classList.remove("active"); 
+            break;           
+        default:
+            selectedDate = getCurrentDate();
+    }
+    fetchDataAsync('http://localhost:7370/api/?token=whenyouseeit');
+}
+
+
+function matchesDate(task, date) {
+    if(selectedDate == task.date) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function getCurrentDate() {
+    var date = new Date(Date.now());
+    let yyyy = date.getFullYear();
+    let mm = date.getMonth()+1;
+    let dd = date.getDate();
+    return yyyy +"-" +mm +"-" +dd;
+}
+
+function getYesterdayDate() {
+    var date = new Date(Date.now())
+    date.setDate(date.getDate()-1);
+    let yyyy = date.getFullYear();
+    let mm = date.getMonth()+1;
+    let dd = date.getDate();
+    return yyyy +"-" +mm +"-" +dd;
+}
+
+function getTomorrowDate() {
+    var date = new Date(Date.now())
+    date.setDate(date.getDate()+1);
+    let yyyy = date.getFullYear();
+    let mm = date.getMonth()+1;
+    let dd = date.getDate();
+    return yyyy +"-" +mm +"-" +dd;
+}
 
 function toggleNewTaskVisibility() {
     switch(newTaskVisibility) {
@@ -110,39 +203,8 @@ function hideNewTask() {
 }
 
 
-async function fetchDataAsync(url) {
-    const response = await fetch(url)
-    .then((response) => response.json())
-    .then((data) => {
-        document.getElementById("loading-text").remove();
-        for (var task of data.tasks) {
-            console.log(task.name);
-
-            var terminalCardDiv = document.createElement("div");
-            terminalCardDiv.classList.add("terminal-card")
-
-            var header = document.createElement("header");
-            header.appendChild(document.createTextNode(task.name))
-
-            var innerDiv = document.createElement("div");
-            innerDiv.appendChild(document.createTextNode(task.description))
-
-            terminalCardDiv.appendChild(header);
-            terminalCardDiv.appendChild(innerDiv);
-
-            var element = document.getElementById("tasks");
-            element.appendChild(terminalCardDiv);
-            element.appendChild(document.createElement("br"));
-
-        }
-    })
-}
-
 fetchDataAsync('http://localhost:7370/api/?token=whenyouseeit');
 </script>
-
-
-
 
 <style>
     :root {
