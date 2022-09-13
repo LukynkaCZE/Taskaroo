@@ -1,3 +1,15 @@
+<script>
+
+//CONFIG
+const APIEndpoint = "http://localhost:7370/api";
+const APIToken = "yourapitoken";
+
+</script>
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,10 +48,12 @@
                     <label for="desc">Description:</label>
                     <textarea id="desc" cols="30" rows="5" placeholder="Description of your task"></textarea>
                 </div>
+                <!-- This will be added in future releases
                 <div class="form-group">
                     <label for="check">Personal:</label>
                     <input for="check" type="checkbox" id="check">
                 </div>
+                -->
                 <button class="btn btn-primary" onclick="createTask()">Create</button>
             </fieldset>
             <br>
@@ -71,14 +85,15 @@ var taskList = [];
 var selectedDate = getCurrentDate();
 
 hideNewTask()
+fetchTasks();
 
-async function fetchDataAsync(url) {
+async function fetchTasks() {
     var taskContainer = document.getElementById("tasks");
     for(var task of taskList) {
         task.remove();
     } 
     showLoadingText();
-    const response = await fetch(url)
+    const response = await fetch(APICall("--"))
     .then((response) => response.json())
     .then((data) => {
         hideLoadingText();
@@ -121,8 +136,6 @@ async function fetchDataAsync(url) {
             terminalCardDiv.setAttribute("taskDate", task.date);
             terminalCardDiv.classList.add("task-card");
 
-//task-card-inner
-
             var br = document.createElement("br") 
             var element = document.getElementById("tasks");
             element.appendChild(terminalCardDiv);
@@ -137,14 +150,14 @@ async function fetchDataAsync(url) {
 async function finishTask(buttonElement) {
     var taskId = buttonElement.parentNode.parentNode.getAttribute("taskId");
     var element = buttonElement.parentNode.parentNode;
-    await fetch("http://localhost:7370/api/remove?id=" +taskId +"&token=whenyouseeit");
+    await fetch(APICall("/remove?id=" +taskId))
     element.remove();
 }
 
 async function createTask() {
     var taskName = document.getElementById("name").value;
     var taskDesc = document.getElementById("desc").value;
-    var taskPersonal = document.getElementById("check").checked;
+    //var taskPersonal = document.getElementById("check").checked;
     var date = selectedDate;
 
     if(taskName == "" || taskName == null) {
@@ -152,12 +165,12 @@ async function createTask() {
         return;
     }
 
-    await fetch(`http://localhost:7370/api/create?name=${taskName}&desc=${taskDesc}&personal=${taskPersonal}&date=${date}&token=whenyouseeit`);
-    fetchDataAsync('http://localhost:7370/api/?token=whenyouseeit')
+    await fetch(APICall(`/create?name=${taskName}&desc=${taskDesc}&personal=false&date=${date}`))
+    fetchTasks()
 
     document.getElementById("name").value = ""
     document.getElementById("desc").value = ""
-    taskPersonal = document.getElementById("check").checked = false
+    //taskPersonal = document.getElementById("check").checked = false
     hideNewTask();
 }
 
@@ -189,7 +202,7 @@ function switchDate(newDate) {
         default:
             selectedDate = getCurrentDate();
     }
-    fetchDataAsync('http://localhost:7370/api/?token=whenyouseeit');
+    fetchTasks()
 }
 
 
@@ -277,7 +290,21 @@ function hideNewTask() {
 }
 
 
-fetchDataAsync('http://localhost:7370/api/?token=whenyouseeit');
+
+
+
+function APICall(url) {
+    console.log(url)
+    if(url == "--") {
+        console.log(APIEndpoint + "?token=" +APIToken)
+        return APIEndpoint + "?token=" +APIToken
+    }
+    else {
+        console.log(APIEndpoint + "?token=" +APIToken)
+        return APIEndpoint + url +"&token=" +APIToken
+    }
+}
+
 </script>
 
 <style>
@@ -304,7 +331,7 @@ fetchDataAsync('http://localhost:7370/api/?token=whenyouseeit');
 	--primary-color: #e01a9c;
 	--secondary-color: #a3a6a8;
 	--error-color: #d20909;
-	--progress-bar-background: #70b8e7;
+	--progress-bar-background: #6fb7e7;
 	--progress-bar-fill: #151515;
 	--code-bg-color: #262626;
 	--input-style: solid;
